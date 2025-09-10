@@ -97,8 +97,10 @@ theorem proofAndCommutes : andCommutes :=
         )
       )
       -- right conjunct: Q ∧ P → P ∧ Q
+      ( fun h: Q ∧ P =>
       (
-        sorry     -- ok, Lean, trust me (acceot as axiom)
+        And.intro h.right h.left  -- ok, Lean, trust me (accept as axiom)
+      )
       )
 
 
@@ -244,6 +246,10 @@ theorem proofAndAssoc : P ∧ (Q ∧ R) ↔ (P ∧ Q) ∧ R :=
     fun
     (h : (P ∧ Q) ∧ R) =>
     (
-      sorry
+      let p := h.left.left
+      let q := h.left.right
+      let r := h.right
+      let qr := And.intro q r
+      And.intro p qr
     )
   )
