@@ -3,7 +3,7 @@
 This homework is intended to significantly
 strengthen your understanding of issues in
 class so far, especially around the amazing
-corresondence between logical implication
+correspondence between logical implication
 and function types in the lambda calculus.
 
 The first part runs you through a bunch of
@@ -28,7 +28,7 @@ squared.
 @@@ -/
 
 def square : Nat → Nat :=
-  sorry
+  λ x => x*x
 
 /- @@@
 #1 [5 points].
@@ -63,6 +63,8 @@ square.
 
 def square' : Nat → Nat :=
 λ y => y^2
+
+#eval square' 5
 
 /- @@@
 #4 [5 points].
@@ -100,7 +102,7 @@ it *prAdd*, short for *partially reduced
 add*, that is equivalent to the result of
 performing one β reduction to the term,
 *add 2 3*. Use the same function definiton
-syntax that we've used to define *add*.
+syntax that we've used to define *add*
 @@@ -/
 
 def prAdd : Nat → Nat
@@ -116,8 +118,10 @@ replacing the *sorry* with your answer.
 
 def M : Nat → Nat → Nat := fun x y => x * y
 
+--β reduction equivalent?
 def M' : Nat → Nat :=
-  sorry
+   fun y => 2*y
+
 
 /- @@@
 #6 [10 points].
@@ -296,9 +300,10 @@ replace the name of any unused argument with _.
 
 @@@ -/
 
-def fTrue : Nat → Nat → Nat
-| n1, _  => n1  -- complete the definition
+def fTrue : fBool
+| n1, _  => n1
 
+#eval fTrue (2+3) 4
 /- @@@
 #13 [5 points]
 
@@ -307,10 +312,10 @@ returns the value of the "false branch,"
 the second argument, which is to say *n2*.
 @@@ -/
 
-def fFalse : Nat → Nat → Nat
+def fFalse : fBool
 | _, n2  => n2
 
-
+#eval fFalse (2+4) 5
 /- @@@
 #14 [10 points]
 Now define *ifThenElse* as the function that
@@ -390,6 +395,19 @@ respectively.
 @@@ -/
 
 -- Answer here
+
+def ifThenElsePoly {a: Type}: Bool -> a -> a -> a
+| true, t, _ => t
+| false, _, f => f
+
+#eval ifThenElsePoly true "Hello" "Goodbye"
+#eval ite true "Hello" "Goodbye"
+
+#eval ifThenElsePoly false "Hello" "Goodbye"
+#eval ite false "Hello" "Goodbye"
+
+
+
 
 
 /- @@@
