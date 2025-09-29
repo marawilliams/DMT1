@@ -74,10 +74,8 @@ it be wrong to use α (alpha) conversion
 to rename an argument, *x*, to *y*? Why?
 
 Answer here:
+If y is is already assigned to something in the application then it can't be used again and be converted.
 
-ANSWER: If the variable *y* already has
-a meaning in the application term. The new
-variable must not already be used in the code.
 @@@ -/
 
 /- @@@
@@ -197,8 +195,7 @@ is the type of this function? Hint: #check (idType).
 Include the parentheses.
 
 Answer here:
-
-ANSWER: Type → Type
+Type → Type
 @@@ -/
 
 def idType (α : Type) : Type := α
@@ -221,8 +218,7 @@ different Type values (Nat, String, Bool) for α.
 What's the type of this function?
 
 Answer:
-
-ANSWER: (α : Type) → α → α
+(α : Type) → α → α
 @@@ -/
 
 def idPoly (α : Type) (a : α) := a
@@ -247,8 +243,7 @@ the answer to this question: What is the type
 of this function, written using → notation?
 
 Answer here:
-
-ANSWER: (α : Type) → α → α
+(α : Type) → α → α
 
 @@@ -/
 
