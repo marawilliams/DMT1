@@ -72,7 +72,8 @@ theorem getSandwich ( H M S : Prop) :
     -- it's an implication, so assume I'm hungry then assume I have money
     fun (hm : H ∧ M) =>
       -- and in this context construct a proof of S
-      _
+      fun(hms : H → M → S) =>
+      hms hm.left hm.right
   )
 
 
@@ -214,24 +215,59 @@ theorem orComm (P Q : Prop) : (P ∨ Q) ↔ (Q ∨ P) :=
     fun porq =>
     (
       -- show Q ∨ P
-      _
+      porq.elim (
+        fun p => Or.inr p
+      )
+      (fun q => Or.inl q)
     )
   )
   -- backward proof: show (Q ∨ P) → (P ∨ Q)
   (
     -- you do the rest
-    _
+    fun qorp =>
+    qorp.elim (fun q => Or.inr q) (fun p => Or.inl p)
   )
 )
 
 /- @@@
 Exercise #2: State and prove the theorem that Or is associative.
 
+-/
+theorem orAssoc (P Q R : Prop) : (P ∨ (Q ∨ R)) ↔ ((P ∨ Q) ∨ R) :=
+(
+  Iff.intro
+  (
+    fun pQR : P ∨ (Q ∨ R) =>
+  pQR.elim
+    (fun p => Or.inl (Or.inl p))        -- P → (P ∨ Q) ∨ R
+    (fun qorR : Q ∨ R =>
+       qorR.elim
+         (fun q => Or.inl (Or.inr q))   -- Q → (P ∨ Q) ∨ R
+         (fun r => Or.inr r))
+  )
+  )
+  (
+  fun PQr : (P ∨ Q) ∨ R => --(P ∨ (Q ∨ R))
+  PQr.elim
+    (fun porq : P ∨ Q => porq.elim
+      (fun p => Or.inl p)
+      (fun q => Or.inr (Or.inl q))
+    )
+    (fun r => Or.inr (Or.inr r))
+  )
+
+/-
 Exercise #3: Is Or transitive? If we know P ∨ Q and we know Q ∨ R
 then do we know P ∨ R for sure? If so prove it, if not in English
 just give a counterexample: What's a situation where the premises
 of this implication are true but the conclusion is false. You can
 just argue here in terms of truth values.
+
+No. Since we don't know which of P, Q, or R are true we cannot
+fully trust P ∨ R. For example, if P is false and R is false but
+Q is true, it would make both P ∨ Q true and Q ∨ R true, but
+falsely conclude P ∨ R is true when it should be in fact false
+
 
 Exercise #4: Formally state and prove the following conjecture:
 ∧ distributes over ∨. This is like saying * distributes over +
@@ -239,4 +275,58 @@ in arithmetic. In math, for example, 3 * (4 + 5) = 3 * 4 + 3 * 5.
 This what we mean by *multiplication distributes over addition.*
 In logic we mean A ∧ (B ∨ C) ↔ (A ∧ B) ∨ (A ∧ C). Formally state
 and prove this equivalence.
+
+
+we can use the above to make a truth table on both sides and see
+if they match.
+LEFT SIDE:
+A B C Result
+0 0 0 0
+0 0 1 0
+0 1 0 0
+1 0 0 0
+1 0 1 1
+1 1 0 1
+1 1 1 1
+
+RIGHT SIDE:
+A B C Result
+0 0 0 0
+0 0 1 0
+0 1 0 0
+0 1 1 0
+1 0 0 0
+1 0 1 1
+1 1 0 1
+1 1 1 1
+
+The truth tables come out to the same thing meaning the logic
+is the same with or without the distributive nature of ∧ over
+∨.
 @@@ -/
+
+theorem anddisor : A ∧ (B ∨ C) ↔ (A ∧ B) ∨ (A ∧ C) :=
+(
+  Iff.intro
+  ( --forward A ∧ (B ∨ C) → (A ∧ B) ∨ (A ∧ C)
+    fun aBC =>
+      let a := aBC.left
+      let BC := aBC.right
+      BC.elim
+      (fun b => Or.inl (And.intro a b))
+      (fun c => Or.inr (And.intro a c))
+  )
+  ( --backward (A ∧ B) ∨ (A ∧ C) ↔ A ∧ (B ∨ C)
+    fun ABAC =>
+      ABAC.elim
+    (fun AB =>
+       let a := AB.left
+       let b := AB.right
+       And.intro a (Or.inl b))
+    (fun AC =>
+       let a := AC.left
+       let c := AC.right
+       And.intro a (Or.inr c))
+
+)
+)
