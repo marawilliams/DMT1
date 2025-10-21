@@ -203,8 +203,22 @@ this principle is valid in Lean 4. You won't be
 able to. Understand where you got stuck. Leave
 you incomplete proof commented out with a quick
 comment explaining exactly why you get stuck.
+-/
+theorem npnpp : ∀ (P : Prop), ¬¬P → P :=
+  (
+    fun P h => sorry --cannot go any further
+    --there is no way to get P from (P → False) → False from this
+    -- this h tells us that we can get a contradiction but we can't actually build P
+  )
 
+/-
 #2. Provide that if you accept (assume) the axiom
 of the excluded middle, then negation elimination
 is valid.
 @@@ -/
+
+theorem npnpp2 (assumed : ∀ (P: Prop), P ∨ ¬P) : ∀ (P :Prop ), ¬¬P → P :=
+fun P h =>
+  match assumed P with
+  | Or.inl p => p
+  | Or.inr np => False.elim (h np)
