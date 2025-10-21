@@ -103,14 +103,17 @@ def noContra {P : Prop} : ¬ (P ∧ ¬ P)
 -- Is this variant of one of DeMorgan's logically valid (provable)?
 theorem notDistribOverAnd {P Q : Prop} : ¬(P ∧ Q) → (¬P ∨ ¬Q)
 | h  =>     -- assume: ¬(P ∧ Q), (P ∧ Q) → False; show (¬P ∨ ¬Q)
-  (Or.inl
-    (fun (p : P) =>
-      (
-        _
-      )
+(Or.inl
+  (fun (p : P) =>
+    (
+      sorry
     )
   )
-
+)
+/-you can not finish this current theorem because there is no proof or assumption that Q is true
+and no way to figure this out at this point. You would have to backtrack. You are currently trying
+to prove that the left side of the result is false, but this cannot be done without some sort of
+context of Q, which cannot be added at the __. I instead put sorry to indicate it is not possible -/
 
 /- @@@
 #2
@@ -136,10 +139,15 @@ fun h => match h with
     (
       fun pq =>   -- to prove ¬(P ∧ Q), assume it; then what?
       (
-        _
+        np pq.left
       )
     )
-  | (Or.inr nq) => _
+  | (Or.inr nq) => (
+     fun pq =>
+     (
+      nq pq.right
+     )
+  )
 
 /- @@@
 #3
@@ -157,3 +165,13 @@ need, leaving them as ( _ ), properly indented on
 their own lines. Then fill in the remaining proofs
 as required.
 -/
+
+theorem notDistribOverAnd'' {P Q : Prop} :  (¬P ∨ ¬Q) ↔ ¬(P ∧ Q) :=
+Iff.intro
+(fun h => fun pq =>
+  match h with
+  | Or.inl np => np pq.left
+  | Or.inr nq => nq pq.right)
+(fun i =>
+(sorry)
+)
