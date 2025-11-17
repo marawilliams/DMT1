@@ -58,15 +58,48 @@ propositional logic, by writing out a truth table. In most cases
 here you can probably figure out the right answer without one, so
 truth tables are NOT required here.
 
-- A. (P → Q) → (Q → P)
+- A. (P → Q) → (Q → P) NOT VALID ⟦P⟧ = false ∧ ⟦Q⟧ = true
 
-- B. (¬Q → ¬P) → (P → Q)
+P  Q    x = P → Q        y = Q → P         x → y
+T  T    T               T                 T
+T  F    F               T                 T
+F  T    T               F                 F
+F  F    T               T                 T
 
-- C. ¬(P ∧ Q) → ¬Q ∨ ¬P
 
-- D. (P ∧ Q) → (P ∨ Q)
+- B. (¬Q → ¬P) → (P → Q) VALID
 
-- E. (P ∨ Q) → (P ∧ Q)
+P  Q  ¬P ¬Q   y = ¬Q → ¬P    x = P → Q    y → x
+T  T  F   F       T               T         T
+T  F  F   T       F               F         T
+F  T  T   F       T               T         T
+F  F  T   T       T               T         T
+
+- C. ¬(P ∧ Q) → ¬Q ∨ ¬P VALID
+
+P  Q  ¬P ¬Q   P ∧ Q   x = ¬(P ∧ Q)  y = ¬Q ∨ ¬P  x → y
+T  T  F   F     T         F               F         T
+T  F  F   T     F         T               T         T
+F  T  T   F     F         T               T         T
+F  F  T   T     F         T               T         T
+
+- D. (P ∧ Q) → (P ∨ Q) VALID
+
+P  Q    x = P ∧ Q  y = P ∨ Q  x → y
+T  T      T             T       T
+T  F      F             T       T
+F  T      F             T       T
+F  F      F             F       T
+
+- E. (P ∨ Q) → (P ∧ Q) INVALID
+1. ⟦P⟧ = True ∧ ⟦Q⟧ = False
+2. ⟦P⟧ = False ∧ ⟦Q⟧ = True
+
+P  Q    x = P ∨ Q   y = P ∧ Q  x → y
+T  T      T             T        T
+T  F      T             F        F
+F  T      T             F        F
+F  F      F             F        T
 
 
 ## 2. Proof-Based Reasoning [20 points each = 60 points]
@@ -80,20 +113,36 @@ example (P Q : Prop) : (P ∨ Q) → (¬P → ¬Q) → False :=
 (
   fun porq np2nq =>
   (
-    sorry
+    match porq with
+    | Or.inl p => sorry
+
+    | Or.inr q => sorry
+
   )
 )
+-- cannot prove using, need a proof of ¬P and cannot assume that from the given.
+-- no way of getting ¬P using P or Q; this cannot be solved
+
 
 example (P Q : Prop) : P → ¬P → Q :=
 (
-  sorry
+  fun p np=>
+    False.elim (np p)
 )
 
 
 example (P Q R : Prop) : (P ∨ Q) ∧ (¬P → Q) :=
 (
   sorry
+  --And.intro
+  --(Or.inl p)
+  --( fun np : ¬P => False.elim (np p ))
+
 )
+
+--do not have any assumptions for either P or Q, so you cannot prove this
+--need an assumption that you have a proof of P in order to solve
+--if given an assumption of p : P than the proof would look like the commented code above and not the sorry
 
 
 /- @@@
@@ -125,11 +174,11 @@ Iff.intro
     match pornp with
     | Or.inl p =>
       match qornq with
-      | Or.inl q => sorry
+      | Or.inl q => Or.inr q
       | Or.inr nq =>
-        let q : Q := sorry
-        False.elim sorry
-    | Or.inr np => sorry
+        let q : Q := h p
+        False.elim (nq q)
+    | Or.inr np => Or.inl np
 )
 
 -- Backward: (¬P ∨ Q) → (P → Q)   [10 points]
@@ -137,8 +186,8 @@ Iff.intro
   fun nporq =>
   (
     match nporq with
-    | Or.inl np => fun p => sorry
-    | Or.inr q => sorry
+    | Or.inl np => fun p => False.elim (np p)
+    | Or.inr q => fun p => q
   )
 )
 
@@ -153,7 +202,20 @@ is Q,  and then if whenever P is true so is ¬Q, then
 P must be false.
 @@@ -/
 
+axiom em : ∀ P : Prop, P ∨ ¬P
+
 -- Answer here:
+example (P Q : Prop) : (P → Q) ∧ (P → ¬Q) → False :=
+  fun h =>
+  let pq := h.left
+  let pnq := h.right
+  let pornp := em P
+  match pornp with
+  | Or.inl p =>
+    False.elim (pnq p (pq p))
+  | Or.inr np =>
+  --need to use classical em here some how
+
 
 /- @@@
 Now try a constructive proof of this proposition.
@@ -167,7 +229,15 @@ though it is valid classically.
 
 -- Lean answer here:
 
+example (P Q : Prop) : (P → Q) ∧ (P → ¬Q) → False :=
+  fun h =>
+  let pq := h.left
+  let pnq := h.right
+  sorry
+
 /- @@@
 Brief English explanation here:
+can't prove this because excluded middle rule is in the classical reasonig
+NOT constructive reasoning so we cannot prove this
 
 @@@ -/
